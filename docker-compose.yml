@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  
+  # Servidor perimetral / Proxy Inverso / Web Server Estático
+  nginx-proxy:
+    image: nginx:1.25-alpine
+    container_name: srv-nginx-proxy
+    restart: unless-stopped
+    ports:
+      # Obligatorio: puerto del host : puerto del contenedor
+      - "80:80"
+    volumes:
+      # Configuraciones montadas como SOLO LECTURA para evitar sabotajes en RCE
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+       - ./nginx/html:/usr/share/nginx/html:ro
+      # Persistencia de logs para auditoría y trazabilidad RGPD
+      - ./nginx/logs:/var/log/nginx
+    networks:
+      - red-corp
+    depends_on:
+      - apache-app
+
+  # Servidor interno Apache
+  apache-app:
+    image: httpd:2.4-alpine
+    container_name: srv-apache-app
+    restart: unless-stopped
+    # Crítico: NO se utiliza la directiva 'ports'.
+    # Este contenedor NO tiene visibilidad directa hacia el exterior del host
+    volumes:
+      - ./apache/htdocs:/usr/local/apache2/htdocs:ro
+      - ./apache/logs:/usr/local/apache2/logs
+    networks:
+      - red-corp
+
+networks:
+  red-corp:
+    driver: bridge
+    ipam:
+      driver: default
