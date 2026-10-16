@@ -1,0 +1,46 @@
+html {
+    box-sizing: border-box;
+}
+
+.encabezado {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #032c07;
+}
+
+.tarjeta {
+    border: 1px solid #8d8a8a;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 5px 8px 12px #8d8a8a;
+    width: 20%;
+    margin: 10% 0 10% 40%;
+}
+
+h1 {
+    color: #ffffff;
+}
+
+h2 {
+    color: #000000;
+}
+
+h3 {
+    color: #65af6d;
+}
+
+h4 {
+    color: #979393;
+    text-align: justify;
+}
+
+.footer {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    padding: 4px;
+    background-color: #032c07;
+}
