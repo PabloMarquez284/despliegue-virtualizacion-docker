@@ -9,11 +9,11 @@ services:
     restart: unless-stopped
     ports:
       # Obligatorio: puerto del host : puerto del contenedor
-      - "80:80"
+      - "8080:80"
     volumes:
       # Configuraciones montadas como SOLO LECTURA para evitar sabotajes en RCE
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
-       - ./nginx/html:/usr/share/nginx/html:ro
+      - ./nginx/html:/usr/share/nginx/html:ro
       # Persistencia de logs para auditoría y trazabilidad RGPD
       - ./nginx/logs:/var/log/nginx
     networks:
