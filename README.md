@@ -51,7 +51,7 @@ Luego, comprobamos el estado del ciclo de vida y los puertos asignados con este 
 **docker compose ps**
 *(Salida esperada:* srv-nginx-proxy mostrará 0.0.0.0:8080-\>80/tcp, mientras que srv-apache-app mostrará 80/tcp sin mapeo hacia el host.)
 
-![Estado y puertos](img/docker_compose_ps.png)
+![Estado y Puertos](img/docker_compose_ps.png)
 
 
 ### Comandos de Verificación (curl)
