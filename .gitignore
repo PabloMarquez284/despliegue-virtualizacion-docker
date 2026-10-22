@@ -1,0 +1,14 @@
+# Archivos de registros y auditoría (Siguiendo RGPD)
+*.log
+nginx/logs/*
+apache/logs/*
+!nginx/logs/.gitkeep
+!apache/logs/.gitkeep
+
+# Archivos de proceso y temporales de Apache/Nginx
+*.pid
+
+# Archivos del sistema operativo y entorno local
+.DS_Store
+Thumbs.db
+.env
