@@ -24,7 +24,7 @@ En primer lugar, siguiendo el principio de **Infraestructura como Código (IaC)*
 
 3. **Control de Acceso por Token:** El endpoint sensible **/privado/** en el dominio app-gestion.empresa.local requiere la cabecera HTTP **X-Auth-Token: DAW2026**. Cualquier solicitud sin esta cabecera es rechazada automáticamente con un código **403 Forbidden**, queriendo decir que no tiene permiso para entrar.
   
-5. **Segregación y Privacidad de Logs (RGPD):**  
+4. **Segregación y Privacidad de Logs (RGPD):**  
    * Se gestiona el registro de auditoría de **acceso** y **errores** de manera **independiente** por dominio (portal\_access.log, app\_gestion\_access.log).  
    * Los registros de tráfico y archivos de proceso local (**\*.log, \*.pid**) están expresamente excluidos del control de versiones mediante **reglas estrictas** en **.gitignore**, preservando la estructura de directorios en Git mediante ficheros .**gitkeep**.
 
@@ -36,28 +36,48 @@ En primer lugar, siguiendo el principio de **Infraestructura como Código (IaC)*
 Antes de desplegar mada, hay que configurar las entradas DNS locales en el archivo de hosts del sistema operativo. En este caso, al trabajar con Windows, la ruta absoluta sería la siguiente:  
 **C:\\Windows\\System32\\drivers\\etc\\hosts o /etc/hosts**. Dentro de ella, añadimos en dicho archivo lo siguiente: **127.0.0.1 portal.empresa.local app-gestion.empresa.local**. Una vez hecho esto, ya podemos desplegar la infraestructura de contenedores adecuadamente.
 
+
+
 ### Comandos de Despliegue
 
 Primero, para levantar la infraestructura de contenedores en segundo plano, ejecutamos en la consola lo siguiente:
 **docker compose up \-d**
+Al tener que realizar el requisito previo y cambiar el host, tuve que eecutar el siguiente comando para que se actualizará:
+**docker compose restart**
+
+![Levantamiento contenedores](img/docker_compose_restart.png)
+
 Luego, comprobamos el estado del ciclo de vida y los puertos asignados con este comando:
 **docker compose ps**
 *(Salida esperada:* srv-nginx-proxy mostrará 0.0.0.0:8080-\>80/tcp, mientras que srv-apache-app mostrará 80/tcp sin mapeo hacia el host.)
 
+![Estado y puertos](img/docker_compose_ps.png)
+
+
 ### Comandos de Verificación (curl)
 
-* **Portal Estático:** 
+1. **Portal Estático:** 
 **curl \-I http\://portal.empresa.local:8080**
 (Salida esperada: HTTP/1.1 200 OK)
 
-* **Aplicación de Gestión:** 
+![Primer curl](img/curl1.png)
+
+2. **Aplicación de Gestión:** 
 **curl \-I http\://app-gestion.empresa.local:8080**
 (Respuesta esperada: HTTP/1.1 200 OK)
 
-* **Validación de Bloqueo en /privado/ (Sin Token):** 
+![Segundo curl](img/curl2.png)
+
+3. **Validación de Bloqueo en /privado/ (Sin Token):** 
 **curl \-i http\://app-gestion.empresa.local:8080/privado/**
 (Respuesta esperada: HTTP/1.1 403 Forbidden)
 
-* **Validación de Acceso Autorizado en /privado/ (Con Token):** 
+![Tercer curl](img/curl3.png)
+
+4. **Validación de Acceso Autorizado en /privado/ (Con Token):** 
 **curl \-i \-H "X-Auth-Token: DAW2026" http\://app-gestion.empresa.local:8080/privado/**
 (Respuesta esperada: HTTP/1.1 200 OK)
+
+![Cuarto curl](img/curl4.png)
+
+He utilizado **--resolve** porque Git Bash no consulta el archivo hosts de Windows directamente, por lo que este parámetro le indica a curl la IP exacta (127.0.0.1) a la que debe enviar la petición para ese dominio sin depender de la DNS del sistema.
